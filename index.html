@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>經濟系營隊活動報名系統</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti for success celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#15803d',
+              600: '#166534',
+              700: '#14532d',
+            },
+            econ: {
+              blue: '#1e3a8a',
+              gold: '#d97706',
+              surface: '#f8fafc',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom radio card transitions */
+    .group-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .group-card:hover {
+      transform: translateY(-2px);
+    }
+    input[type="radio"]:checked + div {
+      border-color: #2563eb;
+      background-color: #eff6ff;
+      box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.15);
+    }
+    input[type="radio"]:checked + div .indicator-badge {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    /* Print styles specifically for admission ticket */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableTicket, #printableTicket * {
+        visibility: visible;
+      }
+      #printableTicket {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 90% !important;
+        max-width: 500px !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+        background: #0f172a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <header class="bg-white/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-200/80">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i data-lucide="trending-up" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-bold text-slate-900 text-lg tracking-tight">國立大學經濟學系</span>
+          <span class="text-xs block text-slate-500 font-medium -mt-1">Department of Economics</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          報名進行中
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+    <!-- Header Hero Banner -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-6 sm:p-10 shadow-xl mb-8">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute right-10 bottom-0 opacity-10 pointer-events-none">
+        <i data-lucide="pie-chart" class="w-64 h-64 text-white"></i>
+      </div>
+
+      <div class="relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/20 text-blue-200 text-xs font-semibold tracking-wider uppercase backdrop-blur-sm mb-4 border border-blue-400/20">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          2026 秋季學術與團隊營隊
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
+          經濟學系迎新與專題營隊活動
+        </h1>
+        <p class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed mb-6">
+          探索個經賽局、宏觀金融與資料分析的世界！透過組別交流激盪跨領域創意思維，名額有限，請儘早完成分組報名。
+        </p>
+
+        <!-- Highlights Bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/10 text-xs sm:text-sm">
+          <div class="flex items-center gap-3 bg-white/5 rounded-xl p-3 backdrop-blur-sm">
+            <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-300 shrink-0">
+              <i data-lucide="calendar" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="text-slate-400 text-xs">活動日期</div>
+              <div class="font-semibold text-white">10 月 7 日 (三)</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 bg-white/5 rounded-xl p-3 backdrop-blur-sm">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-300 shrink-0">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="text-slate-400 text-xs">活動時間</div>
+              <div class="font-semibold text-white">晚上 19:00 - 21:00</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 bg-white/5 rounded-xl p-3 backdrop-blur-sm">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="text-slate-400 text-xs">活動地點</div>
+              <div class="font-semibold text-white">社科院國際會議廳 301</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Main Form Section (7 cols on lg) -->
+      <section class="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative">
+        <div class="mb-6 pb-4 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">填寫報名資料</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">請確實填寫您的基本資訊，以便為您編制活動識別名牌與組別。</p>
+          </div>
+          <span class="text-xs text-rose-500 font-medium">* 為必填項目</span>
+        </div>
+
+        <!-- Form start -->
+        <form id="registrationForm" onsubmit="handleSubmit(event)" novalidate class="space-y-6">
+          
+          <!-- Student ID Field -->
+          <div>
+            <label for="studentId" class="block text-sm font-semibold text-slate-700 mb-2">
+              學號 <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="credit-card" class="w-5 h-5"></i>
+              </div>
+              <input 
+                type="text" 
+                id="studentId" 
+                name="studentId" 
+                placeholder="例如：B11702001 或 4110001" 
+                autocomplete="off"
+                required
+                class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm"
+                oninput="validateStudentId()"
+              />
+            </div>
+            <p id="studentIdError" class="mt-1.5 text-xs text-rose-500 hidden flex items-center gap-1">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>請輸入正確的學號格式（英文或數字 5-10 碼）</span>
+            </p>
+          </div>
+
+          <!-- Name Field -->
+          <div>
+            <label for="fullName" class="block text-sm font-semibold text-slate-700 mb-2">
+              姓名 <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="user" class="w-5 h-5"></i>
+              </div>
+              <input 
+                type="text" 
+                id="fullName" 
+                name="fullName" 
+                placeholder="例如：王小明" 
+                autocomplete="name"
+                required
+                class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm"
+                oninput="validateName()"
+              />
+            </div>
+            <p id="nameError" class="mt-1.5 text-xs text-rose-500 hidden flex items-center gap-1">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>請輸入真實中文或英文姓名（至少 2 個字）</span>
+            </p>
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
+              電子郵件 <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="mail" class="w-5 h-5"></i>
+              </div>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                placeholder="例如：student@econ.edu.tw" 
+                autocomplete="email"
+                required
+                class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm"
+                oninput="validateEmail()"
+              />
+            </div>
+            <p id="emailError" class="mt-1.5 text-xs text-rose-500 hidden flex items-center gap-1">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>請輸入有效格式的電子郵件信箱</span>
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              組別選擇 (分組) <span class="text-rose-500">*</span>
+            </label>
+            <p class="text-xs text-slate-500 mb-3">請選擇您感興趣的研討主題組別：</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Group A -->
+              <label class="relative cursor-pointer select-none">
+                <input type="radio" name="groupSelect" value="A" class="sr-only" checked onchange="updateGroupStats()">
+                <div class="group-card h-full p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="indicator-badge px-2.5 py-0.5 rounded-md text-xs font-bold border border-slate-200 bg-slate-100 text-slate-700 transition-colors">
+                        A 組
+                      </span>
+                      <i data-lucide="line-chart" class="w-4 h-4 text-blue-600"></i>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm mb-1">個體與賽局實務</div>
+                    <p class="text-xs text-slate-500 leading-relaxed">聚焦定價機制、拍賣理論與商業決策賽局。</p>
+                  </div>
+                  <div class="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>專案導向</span>
+                    <span class="text-blue-600 font-semibold">推薦首選</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Group B -->
+              <label class="relative cursor-pointer select-none">
+                <input type="radio" name="groupSelect" value="B" class="sr-only" onchange="updateGroupStats()">
+                <div class="group-card h-full p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="indicator-badge px-2.5 py-0.5 rounded-md text-xs font-bold border border-slate-200 bg-slate-100 text-slate-700 transition-colors">
+                        B 組
+                      </span>
+                      <i data-lucide="coins" class="w-4 h-4 text-emerald-600"></i>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm mb-1">總體金融與投資</div>
+                    <p class="text-xs text-slate-500 leading-relaxed">解析通膨利率週期、全球供應鏈與資本市場。</p>
+                  </div>
+                  <div class="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>市場熱門</span>
+                    <span class="text-emerald-600 font-semibold">名額充裕</span>
+                  </div>
+                </div>
+              </label>
+
+              <!-- Group C -->
+              <label class="relative cursor-pointer select-none">
+                <input type="radio" name="groupSelect" value="C" class="sr-only" onchange="updateGroupStats()">
+                <div class="group-card h-full p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="indicator-badge px-2.5 py-0.5 rounded-md text-xs font-bold border border-slate-200 bg-slate-100 text-slate-700 transition-colors">
+                        C 組
+                      </span>
+                      <i data-lucide="cpu" class="w-4 h-4 text-purple-600"></i>
+                    </div>
+                    <div class="font-bold text-slate-900 text-sm mb-1">計量與數據科學</div>
+                    <p class="text-xs text-slate-500 leading-relaxed">結合 Python/R 進行實證模型分析與因果推論。</p>
+                  </div>
+                  <div class="mt-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>數據技術</span>
+                    <span class="text-purple-600 font-semibold">即將額滿</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Note & Agreement checkbox -->
+          <div class="pt-2">
+            <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600 select-none">
+              <input type="checkbox" id="termsCheck" required checked class="mt-0.5 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+              <span>我確認以上資料正確無誤，並同意營隊幹部透過信件通知活動當日分組座位及行前須知。</span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button 
+              type="submit" 
+              id="submitBtn"
+              class="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 group"
+            >
+              <span>確認送出報名</span>
+              <i data-lucide="send" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="lg:col-span-4 space-y-6">
+        <!-- Live Enrollment Counter Widget with Password Protection -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm relative overflow-hidden transition-all duration-300" id="statsCard">
+          
+          <!-- Locked State Container -->
+          <div id="statsLockedState" class="text-center py-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/70 flex items-center justify-center mx-auto mb-3 shadow-sm">
+              <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800 mb-1">報名動態已受保護</h3>
+            <p class="text-xs text-slate-500 max-w-[240px] mx-auto mb-5 leading-relaxed">
+              即時統計僅限幹部與管理員查看，請輸入管理密碼解鎖。
+            </p>
+
+            <form onsubmit="handleUnlockStats(event)" class="max-w-xs mx-auto space-y-3">
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i data-lucide="key-round" class="w-4 h-4"></i>
+                </div>
+                <input 
+                  type="password" 
+                  id="statsPasswordInput" 
+                  placeholder="請輸入管理員密碼" 
+                  autocomplete="current-password"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all shadow-sm"
+                />
+              </div>
+
+              <p id="statsPasswordError" class="text-xs text-rose-500 hidden flex items-center justify-center gap-1">
+                <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>密碼錯誤，請重新輸入！</span>
+              </p>
+
+              <button 
+                type="submit" 
+                class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-sm"
+              >
+                <i data-lucide="unlock" class="w-3.5 h-3.5"></i>
+                <span>解鎖查看動態</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Unlocked Content (Initially Hidden) -->
+          <div id="statsUnlockedState" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-blue-600"></i>
+                已報名學員名冊
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="totalBadge" class="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full font-semibold border border-blue-200">共 6 人</span>
+                <button 
+                  type="button" 
+                  onclick="lockStats()" 
+                  title="重新鎖定" 
+                  class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group Filter & Summary Pills -->
+            <div class="flex items-center gap-1.5 mb-3 text-[11px] overflow-x-auto pb-1">
+              <button type="button" onclick="filterRoster('ALL')" id="filterBtnALL" class="px-2.5 py-1 rounded-lg font-medium bg-slate-900 text-white shrink-0">全部</button>
+              <button type="button" onclick="filterRoster('A')" id="filterBtnA" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">A組 (個體)</button>
+              <button type="button" onclick="filterRoster('B')" id="filterBtnB" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">B組 (金融)</button>
+              <button type="button" onclick="filterRoster('C')" id="filterBtnC" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0">C組 (數據)</button>
+            </div>
+
+            <!-- Google Sheet API Config Drawer Button -->
+            <div class="mb-3 p-2.5 rounded-xl bg-blue-50/70 border border-blue-200/60 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-1.5 text-blue-900 font-medium">
+                <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+                <span id="apiStatusLabel">試算表連線：演練模式</span>
+              </div>
+              <button 
+                type="button" 
+                onclick="toggleApiSettings()"
+                class="px-2 py-1 rounded bg-white text-blue-700 font-medium border border-blue-200 hover:bg-blue-50 transition-colors text-[11px]"
+              >
+                設定 API 網址
+              </button>
+            </div>
+
+            <!-- API Setting Accordion (Hidden by default) -->
+            <div id="apiConfigBox" class="hidden mb-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+              <div class="font-semibold text-slate-700 flex items-center justify-between">
+                <span>Google Apps Script Web App URL</span>
+                <span class="text-[10px] text-slate-400">部署為網路應用程式後貼上</span>
+              </div>
+              <input 
+                type="url" 
+                id="gasApiInput" 
+                placeholder="https://script.google.com/macros/s/.../exec"
+                class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+              <div class="flex justify-end gap-2">
+                <button type="button" onclick="saveApiUrl()" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">儲存並同步</button>
+              </div>
+            </div>
+
+            <!-- Scrollable Attendee List with Edit/Delete Actions -->
+            <div class="max-h-72 overflow-y-auto space-y-2 pr-1 divide-y divide-slate-100" id="attendeesListContainer">
+              <!-- Dynamically populated attendee rows -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>※ 即時同步 Google 試算表</span>
+              <button type="button" onclick="loadFromGoogleSheet()" class="text-blue-600 hover:underline font-medium flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                重新整理名冊
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Timeline / Tips Card -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-slate-200 rounded-3xl p-6 shadow-sm border border-slate-700">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+            <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
+            活動當日重要時程
+          </h3>
+          <ul class="space-y-3 text-xs text-slate-300">
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">18:45</span>
+              <span>開放報到入場，憑專屬數位入場券報到</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">19:00</span>
+              <span>營隊始業式及系主任致詞開幕</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">19:30</span>
+              <span>分組專題競賽討論與個案模擬分析</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-amber-400 font-bold">20:45</span>
+              <span>成果發表、評選頒獎與大合照交流</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Success Modal with Chat Dialogue and Admission Ticket -->
+  <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl border border-slate-100 transform scale-95 transition-all duration-300 my-auto" id="modalCard">
+      
+      <!-- Dialogue Bubble from Camp Coordinator -->
+      <div class="mb-5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/70 rounded-2xl p-4 flex items-start gap-3 relative shadow-sm">
+        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md font-bold text-xs ring-2 ring-white">
+          幹部
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-xs sm:text-sm text-blue-950 flex items-center gap-1.5">
+              營隊籌備組小精靈
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            </span>
+            <span class="text-[11px] text-blue-400">剛剛</span>
+          </div>
+          <p id="dialogueGreeting" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            哈囉！報名已經成功完成囉 🎉 這是為你量身打造的專屬入場券，活動當天請出示此票券向接待櫃台報到喔！
+          </p>
+        </div>
+      </div>
+
+      <!-- Admission Ticket Card -->
+      <div id="printableTicket" class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white rounded-2xl p-5 sm:p-6 shadow-xl border border-blue-500/30 overflow-hidden mb-6">
+        <!-- Ticket watermark / decor -->
+        <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-blue-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="absolute right-4 top-4 text-white/10 text-6xl font-black font-mono select-none pointer-events-none">
+          PASS
+        </div>
+
+        <!-- Ticket Header -->
+        <div class="flex items-center justify-between border-b border-white/15 pb-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950 tracking-wider">
+              OFFICIAL PASS
+            </span>
+            <span class="text-xs font-semibold text-blue-200">2026 經濟系營隊</span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-300">
+            No. <span id="ticketNumber" class="text-amber-400 font-bold">ECON-8831</span>
+          </div>
+        </div>
+
+        <!-- Ticket Core Info Grid -->
+        <div class="grid grid-cols-2 gap-3 text-xs mb-4">
+          <div>
+            <span class="text-slate-400 text-[10px] block">學員姓名</span>
+            <span id="ticketName" class="text-sm font-bold text-white tracking-wide">-</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] block">學號</span>
+            <span id="ticketStudentId" class="text-sm font-mono font-bold text-white">-</span>
+          </div>
+          <div class="col-span-2">
+            <span class="text-slate-400 text-[10px] block">通知信箱</span>
+            <span id="ticketEmail" class="text-xs font-mono font-medium text-slate-200 truncate block">-</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] block">活動日期與時間</span>
+            <span class="font-medium text-blue-200">10/7 (三) 19:00 - 21:00</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] block">活動地點</span>
+            <span class="font-medium text-slate-200">社科院國際會議廳 301</span>
+          </div>
+        </div>
+
+        <!-- Ticket Divider Perforation effect -->
+        <div class="relative my-3 -mx-6">
+          <div class="border-t border-dashed border-white/20"></div>
+          <div class="absolute -left-3 -top-2.5 w-5 h-5 rounded-full bg-white"></div>
+          <div class="absolute -right-3 -top-2.5 w-5 h-5 rounded-full bg-white"></div>
+        </div>
+
+        <!-- Ticket Footer & QR section -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <span class="text-[10px] text-slate-400 block mb-0.5">專屬組別研討區</span>
+            <span id="ticketGroupBadge" class="inline-block px-3 py-1 rounded-lg text-xs font-bold text-white bg-blue-600 shadow-sm">
+              -
+            </span>
+          </div>
+          <!-- Simulated QR Code -->
+          <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm p-1.5 rounded-xl border border-white/20">
+            <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <path d="M7 7h.01"></path>
+              <path d="M17 7h.01"></path>
+              <path d="M7 17h.01"></path>
+              <path d="M17 17h.01"></path>
+            </svg>
+            <div class="text-[9px] text-slate-300 leading-tight">
+              掃描核銷<br>現場入場
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-2.5">
+        <button 
+          type="button"
+          onclick="printTicket()" 
+          class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors flex items-center justify-center gap-1.5"
+        >
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>列印 / 存為票券</span>
+        </button>
+        <button 
+          type="button"
+          onclick="closeModalAndReset()" 
+          class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+        >
+          填寫下一筆
+        </button>
+        <button 
+          type="button"
+          onclick="closeModal()" 
+          class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>完成</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Attendee Modal -->
+  <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-all duration-300" id="editModalCard">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i data-lucide="user-cog" class="w-5 h-5 text-blue-600"></i>
+          修改學員報名資料
+        </h3>
+        <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="editForm" onsubmit="handleSaveEdit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="editIndex" />
+        <input type="hidden" id="editRowIndex" />
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">學號 (不可更改)</label>
+          <input type="text" id="editStudentId" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl font-mono text-slate-600 cursor-not-allowed">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">姓名</label>
+          <input type="text" id="editName" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">電子郵件</label>
+          <input type="email" id="editEmail" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">組別選擇</label>
+          <select id="editGroup" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+            <option value="A">A 組 (個體與賽局實務)</option>
+            <option value="B">B 組 (總體金融與投資)</option>
+            <option value="C">C 組 (計量與數據科學)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">處理狀態</label>
+          <select id="editStatus" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+            <option value="已確認">已確認</option>
+            <option value="待聯絡">待聯絡</option>
+            <option value="已取消">已取消</option>
+          </select>
+        </div>
+
+        <div class="pt-3 flex gap-2">
+          <button type="button" onclick="closeEditModal()" class="flex-1 py-2.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">
+            取消
+          </button>
+          <button type="submit" id="saveEditBtn" class="flex-1 py-2.5 rounded-xl font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-sm flex items-center justify-center gap-1">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>儲存修改</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
+    <span id="toastMessage">已更新資料</span>
+  </div>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    // Password protection logic for stats
+    const STATS_ACCESS_KEY = "1234";
+
+    // Google Apps Script Web App URL (已預設設定您的部署網址)
+    let gasApiUrl = "https://script.google.com/macros/s/AKfycbz1kvPPuqZmPhQLk_X6smhobLU8pey7K-qhffnGes_MpqWzWXP6DtyBruqGi24V1zVP9A/exec";
+
+    // Initial mock participants list matching screenshot
+    let attendees = [
+      { rowIndex: 2, timestamp: "2026/10/07 19:20", studentId: "B11702001", name: "王小明", email: "wang.xm@example.com", group: "A", agreement: "是", status: "已確認" },
+      { rowIndex: 3, timestamp: "2026/10/07 19:22", studentId: "4110001", name: "陳美玲", email: "meiling.chen@example.com", group: "B", agreement: "是", status: "已確認" },
+      { rowIndex: 4, timestamp: "2026/10/07 19:25", studentId: "B11702045", name: "李冠廷", email: "kuanting.lee@example.com", group: "C", agreement: "是", status: "待聯絡" }
+    ];
+
+    let currentFilter = 'ALL';
+
+    function toggleApiSettings() {
+      const box = document.getElementById('apiConfigBox');
+      box.classList.toggle('hidden');
+    }
+
+    function saveApiUrl() {
+      const input = document.getElementById('gasApiInput');
+      gasApiUrl = input.value.trim();
+      if (gasApiUrl) {
+        document.getElementById('apiStatusLabel').innerHTML = `<span class="text-emerald-700 font-bold">● 已連接 Google 試算表</span>`;
+        showToast('已更新 Google Apps Script URL，正在載入試算表資料...');
+        loadFromGoogleSheet();
+      } else {
+        document.getElementById('apiStatusLabel').innerText = '試算表連線：演練模式';
+      }
+      toggleApiSettings();
+    }
+
+    // 發送請求給 GAS (使用 URLSearchParams 避免 CORS preflight 問題)
+    async function sendGasRequest(action, payload = {}) {
+      if (!gasApiUrl) return null;
+      try {
+        const formData = new URLSearchParams();
+        formData.append('action', action);
+        for (const key in payload) {
+          formData.append(key, payload[key]);
+        }
+        const response = await fetch(gasApiUrl, {
+          method: 'POST',
+          body: formData
+        });
+        return await response.json();
+      } catch (err) {
+        console.error('GAS Request Error:', err);
+        return null;
+      }
+    }
+
+    // 讀取 Google 試算表
+    async function loadFromGoogleSheet() {
+      if (!gasApiUrl) {
+        renderAttendeesList();
+        return;
+      }
+
+      showToast('正在向 Google 試算表同步資料...');
+      try {
+        const response = await fetch(`${gasApiUrl}?action=read`);
+        const res = await response.json();
+        if (res.status === 'success' && Array.isArray(res.data)) {
+          if (res.data.length > 0) {
+            attendees = res.data.map(item => {
+              let grp = 'A';
+              if (String(item.group).includes('B')) grp = 'B';
+              else if (String(item.group).includes('C')) grp = 'C';
+              return {
+                ...item,
+                group: grp
+              };
+            });
+          }
+          renderAttendeesList();
+          showToast(`✅ 已同步 Google 試算表 (${attendees.length} 筆)！`);
+        } else {
+          showToast('⚠️ 載入失敗：' + (res.message || '無法取得名單'));
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('連線失敗，請確認 Apps Script 權限設為「任何人」');
+      }
+    }
+
+    function renderAttendeesList() {
+      const container = document.getElementById('attendeesListContainer');
+      const totalBadge = document.getElementById('totalBadge');
+      if (!container) return;
+
+      const filtered = attendees.filter(a => currentFilter === 'ALL' || a.group === currentFilter);
+      totalBadge.innerText = `共 ${attendees.length} 人`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-slate-400 text-xs">
+            目前該組尚無報名人員
+          </div>
+        `;
+        return;
+      }
+
+      const groupTagStyles = {
+        'A': 'bg-blue-50 text-blue-700 border-blue-200',
+        'B': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'C': 'bg-purple-50 text-purple-700 border-purple-200'
+      };
+
+      const statusStyles = {
+        '已確認': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        '待聯絡': 'bg-amber-50 text-amber-700 border-amber-200',
+        '已取消': 'bg-rose-50 text-rose-700 border-rose-200'
+      };
+
+      container.innerHTML = filtered.slice().reverse().map((person, reversedIdx) => {
+        const realIndex = attendees.indexOf(person);
+        return `
+          <div class="pt-2 pb-2 flex items-center justify-between text-xs hover:bg-slate-50 rounded-xl px-2.5 transition-colors group">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-xs shrink-0 border border-slate-200 shadow-sm">
+                ${person.name.charAt(0)}
+              </div>
+              <div class="min-w-0">
+                <div class="font-semibold text-slate-800 flex items-center gap-1.5 flex-wrap">
+                  <span class="truncate">${person.name}</span>
+                  <span class="text-[10px] px-1.5 py-0.2 rounded border font-mono font-medium shrink-0 ${groupTagStyles[person.group] || 'bg-slate-100 text-slate-600'}">
+                    ${person.group} 組
+                  </span>
+                  <span class="text-[10px] px-1.5 py-0.2 rounded border font-medium shrink-0 ${statusStyles[person.status] || 'bg-slate-100 text-slate-600'}">
+                    ${person.status || '已確認'}
+                  </span>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
+                  <span>${person.studentId}</span>
+                  <span class="text-slate-300">·</span>
+                  <span class="truncate text-slate-500 max-w-[120px] sm:max-w-xs">${person.email || '-'}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons: Edit and Delete -->
+            <div class="flex items-center gap-1 shrink-0 ml-2">
+              <button 
+                type="button" 
+                onclick="openEditModal(${realIndex})" 
+                title="修改學員資料"
+                class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              </button>
+              <button 
+                type="button" 
+                onclick="handleDeleteAttendee(${realIndex})" 
+                title="刪除此筆報名"
+                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+              >
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function filterRoster(group) {
+      currentFilter = group;
+      ['ALL', 'A', 'B', 'C'].forEach(g => {
+        const btn = document.getElementById(`filterBtn${g}`);
+        if (!btn) return;
+        if (g === group) {
+          btn.className = "px-2.5 py-1 rounded-lg font-medium bg-slate-900 text-white shrink-0";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0";
+        }
+      });
+      renderAttendeesList();
+    }
+
+    function handleUnlockStats(event) {
+      event.preventDefault();
+      const input = document.getElementById('statsPasswordInput');
+      const err = document.getElementById('statsPasswordError');
+      const entered = input.value.trim();
+
+      if (entered === STATS_ACCESS_KEY) {
+        err.classList.add('hidden');
+        input.value = '';
+        input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        
+        document.getElementById('statsLockedState').classList.add('hidden');
+        document.getElementById('statsUnlockedState').classList.remove('hidden');
+        
+        renderAttendeesList();
+        showToast('🔓 報名學員名冊已解鎖！');
+        lucide.createIcons();
+      } else {
+        err.classList.remove('hidden');
+        input.classList.add('border-rose-400', 'focus:ring-rose-500');
+        input.focus();
+      }
+    }
+
+    function lockStats() {
+      document.getElementById('statsUnlockedState').classList.add('hidden');
+      document.getElementById('statsLockedState').classList.remove('hidden');
+      const input = document.getElementById('statsPasswordInput');
+      input.value = '';
+      document.getElementById('statsPasswordError').classList.add('hidden');
+      input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+      showToast('🔒 報名學員名冊已重新鎖定');
+      lucide.createIcons();
+    }
+
+    function updateGroupStats() {
+      // Compatibility helper
+    }
+
+    // --- 修改 (Update) 邏輯 ---
+    function openEditModal(index) {
+      const person = attendees[index];
+      if (!person) return;
+
+      document.getElementById('editIndex').value = index;
+      document.getElementById('editRowIndex').value = person.rowIndex || '';
+      document.getElementById('editStudentId').value = person.studentId;
+      document.getElementById('editName').value = person.name;
+      document.getElementById('editEmail').value = person.email;
+      document.getElementById('editGroup').value = person.group;
+      document.getElementById('editStatus').value = person.status || '已確認';
+
+      const modal = document.getElementById('editModal');
+      const card = document.getElementById('editModalCard');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      card.classList.remove('scale-95');
+      card.classList.add('scale-100');
+      lucide.createIcons();
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editModal');
+      const card = document.getElementById('editModalCard');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      card.classList.remove('scale-100');
+      card.classList.add('scale-95');
+    }
+
+    async function handleSaveEdit(event) {
+      event.preventDefault();
+      const index = parseInt(document.getElementById('editIndex').value, 10);
+      const rowIndex = document.getElementById('editRowIndex').value;
+      const studentId = document.getElementById('editStudentId').value;
+      const name = document.getElementById('editName').value.trim();
+      const email = document.getElementById('editEmail').value.trim();
+      const group = document.getElementById('editGroup').value;
+      const status = document.getElementById('editStatus').value;
+
+      if (!attendees[index]) return;
+
+      // 更新本機陣列
+      attendees[index].name = name;
+      attendees[index].email = email;
+      attendees[index].group = group;
+      attendees[index].status = status;
+
+      closeEditModal();
+      renderAttendeesList();
+      showToast('已更新學員資料！');
+
+      // 同步到 Google 試算表
+      if (gasApiUrl) {
+        const groupLabels = {
+          'A': 'A 組：個體與賽局實務',
+          'B': 'B 組：總體金融與投資',
+          'C': 'C 組：計量與數據科學'
+        };
+        sendGasRequest('update', {
+          rowIndex: rowIndex,
+          studentId: studentId,
+          name: name,
+          email: email,
+          group: groupLabels[group] || `${group} 組`,
+          status: status
+        }).then(res => {
+          if (res && res.status === 'success') {
+            showToast('✅ Google 試算表已同步更新！');
+          } else if (res) {
+            showToast('⚠️ 試算表同步失敗：' + res.message);
+          }
+        });
+      }
+    }
+
+    // --- 刪除 (Delete) 邏輯 ---
+    async function handleDeleteAttendee(index) {
+      const person = attendees[index];
+      if (!person) return;
+
+      const isConfirm = window.confirm ? confirm(`確定要刪除學員「${person.name} (${person.studentId})」的報名資料嗎？`) : true;
+      if (!isConfirm) return;
+
+      const deletedPerson = attendees.splice(index, 1)[0];
+      renderAttendeesList();
+      showToast(`已刪除「${deletedPerson.name}」的報名紀錄`);
+
+      // 同步刪除至 Google 試算表
+      if (gasApiUrl) {
+        sendGasRequest('delete', {
+          rowIndex: deletedPerson.rowIndex || '',
+          studentId: deletedPerson.studentId
+        }).then(res => {
+          if (res && res.status === 'success') {
+            showToast('✅ Google 試算表已同步刪除！');
+          } else if (res) {
+            showToast('⚠️ 試算表同步失敗：' + res.message);
+          }
+        });
+      }
+    }
+
+    // Validation functions
+    function validateStudentId() {
+      const input = document.getElementById('studentId');
+      const error = document.getElementById('studentIdError');
+      const val = input.value.trim();
+      const isValid = /^[a-zA-Z0-9]{4,12}$/.test(val);
+
+      if (!isValid && val.length > 0) {
+        error.classList.remove('hidden');
+        input.classList.add('border-rose-400', 'focus:ring-rose-500');
+        input.classList.remove('border-slate-200', 'focus:ring-blue-600');
+        return false;
+      } else {
+        error.classList.add('hidden');
+        input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        input.classList.add('border-slate-200', 'focus:ring-blue-600');
+        return val.length > 0;
+      }
+    }
+
+    function validateName() {
+      const input = document.getElementById('fullName');
+      const error = document.getElementById('nameError');
+      const val = input.value.trim();
+      const isValid = val.length >= 2;
+
+      if (!isValid && val.length > 0) {
+        error.classList.remove('hidden');
+        input.classList.add('border-rose-400', 'focus:ring-rose-500');
+        input.classList.remove('border-slate-200', 'focus:ring-blue-600');
+        return false;
+      } else {
+        error.classList.add('hidden');
+        input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        input.classList.add('border-slate-200', 'focus:ring-blue-600');
+        return isValid;
+      }
+    }
+
+    function validateEmail() {
+      const input = document.getElementById('email');
+      const error = document.getElementById('emailError');
+      const val = input.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isValid = emailRegex.test(val);
+
+      if (!isValid && val.length > 0) {
+        error.classList.remove('hidden');
+        input.classList.add('border-rose-400', 'focus:ring-rose-500');
+        input.classList.remove('border-slate-200', 'focus:ring-blue-600');
+        return false;
+      } else {
+        error.classList.add('hidden');
+        input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        input.classList.add('border-slate-200', 'focus:ring-blue-600');
+        return isValid;
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toastMessage');
+      text.innerText = message;
+      toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 3000);
+    }
+
+    // --- 新增 (Create) 邏輯 ---
+    async function handleSubmit(event) {
+      event.preventDefault();
+
+      const isIdValid = validateStudentId();
+      const isNameValid = validateName();
+      const isEmailValid = validateEmail();
+
+      if (!isIdValid || !isNameValid || !isEmailValid) {
+        if (!isIdValid) {
+          const idInput = document.getElementById('studentId');
+          document.getElementById('studentIdError').classList.remove('hidden');
+          idInput.focus();
+        } else if (!isNameValid) {
+          const nameInput = document.getElementById('fullName');
+          document.getElementById('nameError').classList.remove('hidden');
+          nameInput.focus();
+        } else if (!isEmailValid) {
+          const emailInput = document.getElementById('email');
+          document.getElementById('emailError').classList.remove('hidden');
+          emailInput.focus();
+        }
+        return;
+      }
+
+      const form = document.getElementById('registrationForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const studentId = form.studentId.value.trim();
+      const fullName = form.fullName.value.trim();
+      const email = form.email.value.trim();
+      const selectedGroup = form.groupSelect.value;
+
+      // 防止重複送出狀態
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-70');
+
+      const now = new Date();
+      const timeStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      const newPerson = {
+        rowIndex: attendees.length + 2,
+        timestamp: timeStr,
+        name: fullName,
+        studentId: studentId,
+        email: email,
+        group: selectedGroup,
+        agreement: "是",
+        status: "已確認"
+      };
+
+      attendees.push(newPerson);
+      renderAttendeesList();
+
+      const groupNames = {
+        'A': 'A 組 (個體與賽局實務)',
+        'B': 'B 組 (總體金融與投資)',
+        'C': 'C 組 (計量與數據科學)'
+      };
+
+      const groupFullLabels = {
+        'A': 'A 組：個體與賽局實務',
+        'B': 'B 組：總體金融與投資',
+        'C': 'C 組：計量與數據科學'
+      };
+
+      // 同步寫入 Google 試算表
+      if (gasApiUrl) {
+        sendGasRequest('create', {
+          studentId: studentId,
+          name: fullName,
+          email: email,
+          group: groupFullLabels[selectedGroup] || `${selectedGroup} 組`,
+          agreement: '是',
+          status: '已確認'
+        }).then(res => {
+          if (res && res.status === 'success') {
+            showToast('✅ 資料已成功寫入 Google 試算表！');
+            // 若後端有回傳新資料列號，可再次刷新確保 rowIndex 對齊
+            loadFromGoogleSheet();
+          } else if (res) {
+            showToast('⚠️ 試算表回傳：' + res.message);
+          }
+        });
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-70');
+
+      // Random serial number for ticket
+      const ticketSerial = `ECON-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      document.getElementById('ticketNumber').innerText = ticketSerial;
+
+      // Update Chat Dialogue
+      const dialogueText = `嗨 ${fullName}！恭喜你已完成報名手續 🎉 我們已將確認行前通知發送至 ${email}，你的組別為【${groupNames[selectedGroup] || selectedGroup}】。10/7 (三) 晚上 18:45 開始報到，請妥善保存下方的專屬入場券！`;
+      document.getElementById('dialogueGreeting').innerText = dialogueText;
+
+      // Populate admission ticket
+      document.getElementById('ticketName').innerText = fullName;
+      document.getElementById('ticketStudentId').innerText = studentId;
+      document.getElementById('ticketEmail').innerText = email;
+      document.getElementById('ticketGroupBadge').innerText = groupNames[selectedGroup] || `${selectedGroup} 組`;
+
+      // Trigger celebration confetti
+      try {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch(e) {}
+
+      // Show modal
+      const modal = document.getElementById('successModal');
+      const modalCard = document.getElementById('modalCard');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modalCard.classList.remove('scale-95');
+      modalCard.classList.add('scale-100');
+      lucide.createIcons();
+    }
+
+    function printTicket() {
+      window.print();
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('successModal');
+      const modalCard = document.getElementById('modalCard');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modalCard.classList.remove('scale-100');
+      modalCard.classList.add('scale-95');
+      showToast('報名手續已完成，請準時出席！');
+    }
+
+    function closeModalAndReset() {
+      closeModal();
+      document.getElementById('registrationForm').reset();
+      const defaultRadio = document.querySelector('input[name="groupSelect"][value="A"]');
+      if (defaultRadio) defaultRadio.checked = true;
+      document.getElementById('studentId').focus();
+    }
+
+    // Initialize display values on page load
+    window.onload = function() {
+      // 填入預設 API 網址並標示已連線狀態
+      const input = document.getElementById('gasApiInput');
+      if (input && gasApiUrl) {
+        input.value = gasApiUrl;
+        document.getElementById('apiStatusLabel').innerHTML = `<span class="text-emerald-700 font-bold">● 已連接 Google 試算表</span>`;
+      }
+      renderAttendeesList();
+      if (gasApiUrl) {
+        loadFromGoogleSheet();
+      }
+    };
+  </script>
+</body>
+</html>
